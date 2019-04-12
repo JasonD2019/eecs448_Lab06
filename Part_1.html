@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+   <title>Vue Lab Part 1</title>
+   <link
+     rel="stylesheet"    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+     crossorigin="anonymous"
+   />
+ </head>
+ <body>
+
+    <div class="jumbotron">
+    <h1 class="display-4">Hello, world!</h1>
+    <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+    <hr class="my-4">
+    <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+    <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+    </div>
+    
+    <!-- Place the following in your body element before all your script tags: -->
+    <div class="container"><div id="app">Message: {{ message }}</div></div><br>
+    <div id="app-2"><span v-bind:title="message">Hover your mouse over me for a few seconds to see my dynamically bound title!</span></div><br>
+    <div id="app-3"><span v-if="seen">Now you see me</span></div><br>
+    <div id="app-4"><ol><li v-for="todo in todos">{{ todo.text }}</li></ol></div><br>
+    <div id="app-5"><p>{{ message }}</p><button v-on:click="reverseMessage">Reverse Message</button></div><br> 
+    <div id="app-6"><p>{{ message }}</p><input v-model="message"></div><br>
+    <div id="components-demo"><button-counter></button-counter></div><br>
+    <ul id="example-1"><li v-for="item in items">{{ item.message }}</li></ul><br>
+    <ul id="example-2"><li v-for="(item, index) in items">{{ parentMessage }} - {{ index }} - {{ item.message }}</li></ul>
+
+   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+     src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+     crossorigin="anonymous"
+     src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+     crossorigin="anonymous"
+   </script>
+   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+   <script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!'
+        }
+    })
+
+    var app2 = new Vue({
+        el: '#app-2',
+        data: {
+            message: 'You loaded this page on ' + new Date().toLocaleString()
+        }
+    })
+ 
+    var app3 = new Vue({
+        el: '#app-3',
+        data: {
+            seen: true
+        }
+    })
+
+    var app4 = new Vue({
+    el: '#app-4',
+    data: {
+        todos: [
+        { text: 'Learn JavaScript' },
+        { text: 'Learn Vue' },
+        { text: 'Build something awesome' }
+        ]
+    }
+    })
+ 
+    var app5 = new Vue({
+        el: '#app-5',
+        data: {
+            message: 'Hello Vue.js!'
+        },
+        methods: {
+            reverseMessage: function () {
+            this.message = this.message.split('').reverse().join('')
+            }
+        }
+    })
+
+    var app6 = new Vue({
+        el: '#app-6',
+        data: {
+            message: 'Hello Vue!'
+        }
+    })
+ 
+    Vue.component('button-counter', {
+        data: function () {
+            return {
+            count: 0
+            }
+        },
+        template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+    })
+    new Vue({ el: '#components-demo' })
+
+    var example1 = new Vue({
+        el: '#example-1',
+        data: {
+            items: [
+            { message: 'Foo' },
+            { message: 'Bar' }
+            ]
+        }
+    })
+
+    var example2 = new Vue({
+        el: '#example-2',
+        data: {
+            parentMessage: 'Parent',
+            items: [
+            { message: 'Foo' },
+            { message: 'Bar' }
+            ]
+        }
+    })
+    </script>
+ </body>
+</html>
+

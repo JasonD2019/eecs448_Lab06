@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+div{
+  left: 30px
+};
+</style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Vue Lab Part 2</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+</head>
+
+<body>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+      src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity = "sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin = "anonymous"
+      src = "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity = "sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin = "anonymous"
+    </script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <div id="example"><br>
+    &emsp;&emsp;&emsp; Number of stops to show:
+    <input v-model.number="numStops" type="number" min="0"><br><br>
+
+    <div v-for="(stop, index) in filteredStops">
+      <div class="card border-secondary mb-3" style="max-width: 30rem;" style="width: 18rem;">
+        <div>
+          <h3 class="card-header">{{stop.name}}</h3>
+          <div class="card-body text-secondary">
+            <p class="card-text">{{stop.description}}<br>
+              Distance: {{stop.distance}} m
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    let app = new Vue({
+      el: '#example',
+      data: {
+        stop: [],
+        numStops: 10,
+        current_latitude: 0,
+        current_longtitude: 0
+      },
+
+      // get the data from https://utils.pauliankline.com/stops.json 
+      mounted: function () {
+        fetch('https://utils.pauliankline.com/stops.json')
+          .then(function (response) {
+            return response.json();
+          })
+          .then((response) => { this.stop = response });
+        var watchID = navigator.geolocation.watchPosition((position) => {
+          this.current_latitude = position.coords.latitude;
+          this.current_longtitude = position.coords.longitude;
+          console.log("Latitude: " + this.current_latitude + "Longitude: " + this.current_longtitude)
+        }
+        )
+      },
+
+      // connect the numStops with input
+      computed: {
+        // a computed getter
+        filteredStops: function () {
+          // `this` points to the vm instance
+          return this.stop.slice(0, this.numStops)
+        }
+      },
+
+      // when the position change, recalculate
+      watch: {
+        current_latitude: function () {
+          this.cal_dis();
+        },
+        current_longtitude: function () {
+          this.cal_dis();
+        }
+      },
+
+      // the function which calculate the distance between bus stop and current position
+      methods: {
+        // use a for loop to calculate each stop's distance
+        cal_dis: function () {
+          for (let i = 0; i < this.stop.length; i++) {
+            this.stop[i].distance = this.CalculateDistance(this.current_latitude, this.current_longtitude, this.stop[i].lat, this.stop[i].lon)
+          }
+          // to sort the stop by distance https://www.w3schools.com/js/js_array_sort.asp
+          this.stop.sort(function (a, b) {
+            return a.distance - b.distance;
+          })
+        },
+
+        // the code calculate the distance from "https://segmentfault.com/a/1190000010371592"
+        CalculateDistance: function (x1, y1, x2, y2) {
+          var radx1 = x1 * Math.PI / 180.0;
+          var radx2 = x2 * Math.PI / 180.0;
+          var a = radx1 - radx2;
+          var b = y1 * Math.PI / 180.0 - y2 * Math.PI / 180.0;
+          var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) +
+            Math.cos(radx1) * Math.cos(radx2) * Math.pow(Math.sin(b / 2), 2)));
+          s = s * 6378.137;// EARTH_RADIUS;
+          s = Math.round(s * 10000) / 10000;
+          return s*1000;
+        },
+      },
+    })
+
+    // function getLocation() {
+    //   if (navigator.geolocation) {
+    //     navigator.geolocation.getCurrentPosition(showPosition);
+    //   } else {
+    //     x.innerHTML = "Geolocation is not supported by this browser.";
+    //   }
+    // }
+    // function showPosition(position) {
+    //   this.current_latitude = position.coords.latitude;
+    //   this.current_longtitude = position.coords.longitude;
+    //   console.log("current Latitude: " + current_latitude + " current Longitude: " + current_longtitude)
+    // }
+
+    // var watchID = navigator.geolocation.watchPosition(
+    //     (position) => {
+    //       this.current_latitude = position.coords.latitude;
+    //       this.current_longtitude = position.coords.longitude;
+    //     }
+    //   );
+  </script>
+</body>
